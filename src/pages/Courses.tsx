@@ -1,64 +1,14 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
+import { coursesData } from '../lib/courseData'
+import { getCourseProgress } from '../lib/storage'
 
 const Courses: React.FC = () => {
-  // 模拟课程数据
-  const courses = [
-    {
-      id: '1',
-      title: 'Python基础入门',
-      description: '掌握Python编程语言的基础知识，为数据分析打下基础',
-      coverImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=python%20programming%20course%20cover&image_size=landscape_4_3',
-      difficulty: '初级',
-      duration: 12
-    },
-    {
-      id: '2',
-      title: '数据分析与可视化',
-      description: '学习使用Python进行数据清洗、分析和可视化',
-      coverImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=data%20analysis%20visualization%20course%20cover&image_size=landscape_4_3',
-      difficulty: '中级',
-      duration: 16
-    },
-    {
-      id: '3',
-      title: '商务数据分析实战',
-      description: '应用数据分析技术解决实际商务问题',
-      coverImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=business%20data%20analysis%20course%20cover&image_size=landscape_4_3',
-      difficulty: '高级',
-      duration: 20
-    },
-    {
-      id: '4',
-      title: '数据挖掘与机器学习',
-      description: '学习数据挖掘和机器学习的基本概念和应用',
-      coverImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=data%20mining%20machine%20learning%20course%20cover&image_size=landscape_4_3',
-      difficulty: '高级',
-      duration: 24
-    },
-    {
-      id: '5',
-      title: 'SQL数据库基础',
-      description: '学习SQL语言和数据库操作的基础知识',
-      coverImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sql%20database%20course%20cover&image_size=landscape_4_3',
-      difficulty: '初级',
-      duration: 10
-    },
-    {
-      id: '6',
-      title: '商业智能与报表',
-      description: '学习使用商业智能工具创建数据报表和仪表盘',
-      coverImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=business%20intelligence%20reporting%20course%20cover&image_size=landscape_4_3',
-      difficulty: '中级',
-      duration: 14
-    }
-  ]
-
   const [filter, setFilter] = useState('全部')
   const [search, setSearch] = useState('')
 
-  const filteredCourses = courses.filter(course => {
+  const filteredCourses = coursesData.filter(course => {
     const matchesDifficulty = filter === '全部' || course.difficulty === filter
     const matchesSearch = course.title.toLowerCase().includes(search.toLowerCase()) || 
                          course.description.toLowerCase().includes(search.toLowerCase())
@@ -69,32 +19,36 @@ const Courses: React.FC = () => {
     <Layout>
       <section className="py-20 pt-32">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-8 text-center">课程中心</h1>
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">数据分析师成长之路</h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              从零基础到实战专家，系统学习数据分析技能，开启职业新篇章
+            </p>
+          </div>
           
-          {/* 筛选和搜索 */}
           <div className="mb-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex flex-wrap gap-2">
                 <button 
-                  className={`px-4 py-2 rounded-md ${filter === '全部' ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-700'}`}
+                  className={`px-4 py-2 rounded-lg transition-colors ${filter === '全部' ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                   onClick={() => setFilter('全部')}
                 >
                   全部
                 </button>
                 <button 
-                  className={`px-4 py-2 rounded-md ${filter === '初级' ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-700'}`}
+                  className={`px-4 py-2 rounded-lg transition-colors ${filter === '初级' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                   onClick={() => setFilter('初级')}
                 >
                   初级
                 </button>
                 <button 
-                  className={`px-4 py-2 rounded-md ${filter === '中级' ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-700'}`}
+                  className={`px-4 py-2 rounded-lg transition-colors ${filter === '中级' ? 'bg-yellow-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                   onClick={() => setFilter('中级')}
                 >
                   中级
                 </button>
                 <button 
-                  className={`px-4 py-2 rounded-md ${filter === '高级' ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-700'}`}
+                  className={`px-4 py-2 rounded-lg transition-colors ${filter === '高级' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                   onClick={() => setFilter('高级')}
                 >
                   高级
@@ -104,7 +58,7 @@ const Courses: React.FC = () => {
                 <input 
                   type="text" 
                   placeholder="搜索课程..." 
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full md:w-64"
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -115,24 +69,59 @@ const Courses: React.FC = () => {
             </div>
           </div>
 
-          {/* 课程列表 */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCourses.map(course => (
-              <div key={course.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <img src={course.coverImage} alt={course.title} className="w-full h-48 object-cover" />
-                <div className="p-6">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">{course.difficulty}</span>
-                    <span className="text-gray-500 text-sm">{course.duration} 小时</span>
+            {filteredCourses.map(course => {
+              const progress = getCourseProgress(course.id)
+              return (
+                <div key={course.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                  <img src={course.coverImage} alt={course.title} className="w-full h-48 object-cover" />
+                  <div className="p-6">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className={`text-xs font-medium px-3 py-1 rounded-full ${
+                        course.difficulty === '初级' ? 'bg-green-100 text-green-800' :
+                        course.difficulty === '中级' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>{course.difficulty}</span>
+                      <span className="text-gray-500 text-sm">{course.duration} 小时</span>
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">{course.title}</h3>
+                    <p className="text-gray-600 mb-4 line-clamp-3">{course.description}</p>
+                    
+                    <div className="flex items-center mb-4">
+                      <span className="text-yellow-500 mr-1">★</span>
+                      <span className="font-medium">{course.rating}</span>
+                      <span className="text-gray-500 text-sm ml-2">({course.reviewCount}人评价)</span>
+                    </div>
+                    
+                    {progress > 0 && (
+                      <div className="mb-4">
+                        <div className="flex justify-between mb-1 text-sm">
+                          <span className="text-gray-600">学习进度</span>
+                          <span className="text-blue-700 font-medium">{progress}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full" 
+                            style={{ width: `${progress}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="flex gap-3">
+                      <Link to={`/courses/${course.id}`} className="flex-1 text-center bg-blue-700 text-white px-4 py-3 rounded-lg hover:bg-blue-800 transition-colors font-medium">
+                        查看详情
+                      </Link>
+                      {progress > 0 && (
+                        <Link to={`/learn/${course.id}/1`} className="flex-1 text-center bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium">
+                          继续学习
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{course.title}</h3>
-                  <p className="text-gray-600 mb-4">{course.description}</p>
-                  <Link to={`/courses/${course.id}`} className="block text-center bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800">
-                    查看详情
-                  </Link>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
