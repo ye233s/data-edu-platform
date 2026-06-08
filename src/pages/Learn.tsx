@@ -150,53 +150,134 @@ const Learn: React.FC = () => {
           output = '✅ Python代码已运行！\n(注：这是演示环境，仅支持基础语法)'
         }
       } else if (activeEditorType === 'sql') {
-        // SQL简单模拟执行
+        // 改进的SQL模拟执行
         const code = userCode.toLowerCase()
+        const originalCode = userCode
+        
+        // 模拟产品数据
+        const mockProducts = [
+          { id: 1, name: '笔记本电脑', category: '电子产品', price: 5999.00, stock: 50 },
+          { id: 2, name: '无线鼠标', category: '电子产品', price: 89.00, stock: 200 },
+          { id: 3, name: '机械键盘', category: '电子产品', price: 299.00, stock: 80 },
+          { id: 4, name: '显示器', category: '电子产品', price: 1599.00, stock: 40 },
+        ]
         
         if (code.includes('select')) {
+          // 解析SELECT语句
           if (code.includes('count') || code.includes('sum') || code.includes('avg')) {
-            output = '-- 查询结果 --\n总计: 3条记录\n合计: 38500.00'
+            const hasCount = code.includes('count')
+            const hasSum = code.includes('sum')
+            const hasAvg = code.includes('avg')
+            
+            let result = '-- 聚合查询结果 --\n'
+            if (hasCount) result += `COUNT: ${mockProducts.length}条记录\n`
+            if (hasSum) {
+              const totalPrice = mockProducts.reduce((sum, p) => sum + p.price, 0)
+              const totalStock = mockProducts.reduce((sum, p) => sum + p.stock, 0)
+              result += `SUM(库存): ${totalStock}件\n`
+              result += `SUM(价格): ${totalPrice.toFixed(2)}元`
+            }
+            if (hasAvg) {
+              const avgPrice = mockProducts.reduce((sum, p) => sum + p.price, 0) / mockProducts.length
+              result += `AVG(价格): ${avgPrice.toFixed(2)}元`
+            }
+            output = result
           } else if (code.includes('where')) {
-            output = '-- 筛选结果 --\n找到 2条记录'
+            const isPriceFilter = code.match(/price\s*[<>=]/)
+            const isCategoryFilter = code.includes('category')
+            
+            let filtered = [...mockProducts]
+            if (isCategoryFilter && code.includes("'电子产品'")) {
+              // 保持原样
+            } else if (isPriceFilter) {
+              filtered = mockProducts.filter(p => p.price < 1000)
+            }
+            
+            output = `-- 筛选结果 (${filtered.length}条) --\n`
+            output += 'id  产品      价格     库存\n'
+            output += filtered.map(p => 
+              `${p.id.toString().padEnd(4)}${p.name.padEnd(10)}${p.price.toFixed(2).padEnd(10)}${p.stock}`
+            ).join('\n')
           } else {
-            output = '-- 表格数据 --\nid  产品      价格    库存\n1   笔记本电脑  5999.00  50\n2   无线鼠标   89.00   200\n3   机械键盘   299.00  80'
+            output = '-- 查询结果 --\n'
+            output += 'id  产品      价格     库存\n'
+            output += mockProducts.map(p => 
+              `${p.id.toString().padEnd(4)}${p.name.padEnd(10)}${p.price.toFixed(2).padEnd(10)}${p.stock}`
+            ).join('\n')
           }
-        } else if (code.includes('create') || code.includes('insert')) {
-          output = '-- 操作成功 --\n✓ 执行完成'
+        } else if (code.includes('insert')) {
+          output = '-- INSERT成功 --\n✓ 已插入1条新记录'
+        } else if (code.includes('update')) {
+          output = '-- UPDATE成功 --\n✓ 已更新1条记录'
+        } else if (code.includes('delete')) {
+          output = '-- DELETE成功 --\n✓ 已删除1条记录'
+        } else if (code.includes('create')) {
+          output = '-- CREATE成功 --\n✓ 数据表创建成功'
         } else {
-          output = activeContent.expectedOutput || '-- SQL已执行 --'
+          output = activeContent.expectedOutput || `-- SQL执行成功 --\n${originalCode.slice(0, 50)}...`
         }
       } else if (activeEditorType === 'excel') {
-        // Excel公式模拟
+        // 改进的Excel公式模拟
         const formula = userCode.trim()
+        
+        // 模拟的Excel数据
+        const mockData = {
+          A1: 100, A2: 120, A3: 80, A4: 90, A5: 110,
+          B1: 50, B2: 50, B3: 80, B4: 80, B5: 50,
+          C1: 85, C2: 92, C3: 78, C4: 88, C5: 95,
+        }
+        
         if (formula.startsWith('=')) {
-          if (formula.toLowerCase().startsWith('=sum(')) {
-            const match = formula.match(/sum\(([A-Z]\d+):([A-Z]\d+)\)/i)
-            if (match) {
-              output = `SUM(${match[1]}:${match[2]}) = 350`
+          const formulaLower = formula.toLowerCase()
+          
+          if (formulaLower.startsWith('=sum(')) {
+            const rangeMatch = formula.match(/sum\(([A-Z])(\d+):([A-Z])(\d+)\)/i)
+            if (rangeMatch) {
+              const [, col1, row1, col2, row2] = rangeMatch
+              let sum = 0
+              for (let r = parseInt(row1); r <= parseInt(row2); r++) {
+                const key = `${col1.toUpperCase()}${r}`
+                if (mockData[key as keyof typeof mockData] !== undefined) {
+                  sum += mockData[key as keyof typeof mockData]
+                }
+              }
+              output = `=SUM(${col1}${row1}:${col2}${row2}) = ${sum}`
             } else {
               output = 'SUM计算结果: 17400'
             }
-          } else if (formula.toLowerCase().startsWith('=average(')) {
+          } else if (formulaLower.startsWith('=average(')) {
             output = 'AVERAGE计算结果: 85.75'
-          } else if (formula.toLowerCase().startsWith('=max(')) {
-            output = 'MAX计算结果: 92'
-          } else if (formula.toLowerCase().startsWith('=min(')) {
+          } else if (formulaLower.startsWith('=max(')) {
+            output = 'MAX计算结果: 95'
+          } else if (formulaLower.startsWith('=min(')) {
             output = 'MIN计算结果: 78'
+          } else if (formulaLower.startsWith('=count(')) {
+            output = 'COUNT计算结果: 5'
+          } else if (formulaLower.startsWith('=countif(')) {
+            output = 'COUNTIF计算结果: 2'
+          } else if (formulaLower.startsWith('=sumif(')) {
+            output = 'SUMIF计算结果: 163'
+          } else if (formulaLower.startsWith('=if(')) {
+            output = 'IF计算结果: True'
           } else {
-            output = `公式 ${formula} 已计算`
+            output = `公式 ${formula} 已计算\n(注: 演示环境支持 SUM/AVERAGE/MAX/MIN/COUNT/COUNTIF/SUMIF/IF)`
           }
+        } else if (formula.trim() !== '') {
+          output = `输入内容: ${formula}\n(提示: Excel公式需要以 = 开头)`
         } else {
-          output = '请输入Excel公式，例如：=SUM(A1:A10)'
+          output = '请输入Excel公式，例如：\n=SUM(A1:A10)\n=AVERAGE(C1:C5)\n=IF(A1>100, "优秀", "良好")'
         }
       } else if (activeEditorType === 'statistics') {
-        // 统计计算
+        // 改进的统计计算
         const lines = userCode.split('\n').filter(line => line.trim())
         const numbers: number[] = []
         
         for (const line of lines) {
-          const num = parseFloat(line.trim())
-          if (!isNaN(num)) numbers.push(num)
+          const parts = line.split(/[,，\s]+/).filter(Boolean)
+          for (const part of parts) {
+            const num = parseFloat(part.trim())
+            if (!isNaN(num)) numbers.push(num)
+          }
         }
         
         if (numbers.length > 0) {
@@ -207,10 +288,37 @@ const Learn: React.FC = () => {
             : sorted[Math.floor(sorted.length/2)]
           const min = Math.min(...numbers)
           const max = Math.max(...numbers)
+          const range = max - min
+          const variance = numbers.reduce((sum, num) => sum + Math.pow(num - mean, 2), 0) / numbers.length
+          const stdDev = Math.sqrt(variance)
           
-          output = `=== 统计分析 ===\n样本数: ${numbers.length}\n均值: ${mean.toFixed(2)}\n中位数: ${median.toFixed(2)}\n最小值: ${min}\n最大值: ${max}`
+          // 众数计算
+          const frequency: Record<number, number> = {}
+          let maxFreq = 0
+          let mode: number[] = []
+          for (const num of numbers) {
+            frequency[num] = (frequency[num] || 0) + 1
+            if (frequency[num] > maxFreq) {
+              maxFreq = frequency[num]
+              mode = [num]
+            } else if (frequency[num] === maxFreq && !mode.includes(num)) {
+              mode.push(num)
+            }
+          }
+          
+          output = `=== 统计分析报告 ===\n`
+          output += `样本数: ${numbers.length}\n`
+          output += `和: ${numbers.reduce((a, b) => a + b, 0).toFixed(2)}\n`
+          output += `最小值: ${min}\n`
+          output += `最大值: ${max}\n`
+          output += `极差: ${range.toFixed(2)}\n`
+          output += `均值: ${mean.toFixed(2)}\n`
+          output += `中位数: ${median.toFixed(2)}\n`
+          output += `众数: ${mode.length > 0 ? mode.join(', ') : '无'}\n`
+          output += `方差: ${variance.toFixed(2)}\n`
+          output += `标准差: ${stdDev.toFixed(2)}`
         } else {
-          output = '请输入数值数据，每行一个数字'
+          output = '请输入数值数据\n支持格式：\n- 每行一个数字\n- 用逗号或空格分隔多个数字\n\n示例：\n85\n92\n78\n88\n95'
         }
       }
     } catch (e) {
