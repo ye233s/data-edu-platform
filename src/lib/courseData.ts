@@ -36,7 +36,7 @@ export const coursesData: Course[] = [
     id: '1',
     title: 'Python基础入门',
     description: '本课程将帮助你掌握Python编程语言的基础知识，为数据分析打下坚实的基础。通过理论学习和实践练习，你将学会Python的基本语法、数据类型、控制结构、函数、模块等核心概念。',
-    coverImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=python%20programming%20course%20cover%20professional&image_size=landscape_4_3',
+    coverImage: 'https://images.unsplash.com/photo-1526379007216-c7203e2357989?w=800&h=450&fit=crop',
     difficulty: '初级',
     duration: 12,
     instructor: '张老师',
@@ -123,7 +123,7 @@ export const coursesData: Course[] = [
     id: '2',
     title: '数据分析与可视化',
     description: '学习使用Python进行数据清洗、分析和可视化。掌握Pandas、NumPy和Matplotlib等核心库，能够独立完成数据分析项目。',
-    coverImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=data%20analysis%20visualization%20course%20professional&image_size=landscape_4_3',
+    coverImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38e372?w=800&h=450&fit=crop',
     difficulty: '中级',
     duration: 16,
     instructor: '李老师',
@@ -152,6 +152,50 @@ export const coursesData: Course[] = [
             expectedOutput: '=== 创建数组 ===\n数组1: [1 2 3 4 5]\n全0数组: [0. 0. 0. 0. 0.]\n全1数组: [1. 1. 1. 1. 1.]\n1-10: [ 1  2  3  4  5  6  7  8  9 10]\n\n=== 数组运算 ===\na + b = [5 7 9]\na * b = [ 4 10 18]\na * 2 = [2 4 6]\n\n=== 统计计算 ===\n分数: [85 92 78 90 88 95 82]\n平均分: 87.14285714285714\n最高分: 95\n最低分: 78\n标准差: 5.494519316455111'
           }
         ]
+      },
+      {
+        id: '2',
+        title: 'Pandas入门',
+        duration: 100,
+        contents: [
+          {
+            id: '3',
+            type: 'text',
+            title: 'DataFrame基础',
+            duration: 25,
+            content: '# Pandas入门\n\n## 什么是Pandas\n\nPandas是Python的数据分析库，提供高效的数据结构和数据分析工具。\n\n## 安装\n\n```bash\npip install pandas\n```\n\n## 创建DataFrame\n\n```python\nimport pandas as pd\n\n# 从字典创建\ndata = {\n    \'姓名\': [\'张三\', \'李四\', \'王五\'],\n    \'年龄\': [25, 30, 35],\n    \'城市\': [\'北京\', \'上海\', \'广州\']\n}\ndf = pd.DataFrame(data)\nprint(df)\n```\n\n## 基本操作\n\n```python\n# 查看前几行\nprint(df.head())\n\n# 查看数据形状\nprint(df.shape)\n\n# 查看列名\nprint(df.columns)\n```'
+          },
+          {
+            id: '4',
+            type: 'code',
+            title: 'Pandas数据操作',
+            duration: 45,
+            code: '# Pandas练习\nimport pandas as pd\nimport numpy as np\n\n# 1. 创建DataFrame\nprint("=== 创建DataFrame ===")\ndata = {\n    \'产品\': [\'苹果\', \'香蕉\', \'橙子\', \'葡萄\'],\n    \'价格\': [5.5, 3.0, 4.0, 8.0],\n    \'销量\': [100, 150, 120, 80]\n}\ndf = pd.DataFrame(data)\nprint(df)\n\n# 2. 基本统计\nprint("\\n=== 基本统计 ===")\nprint(df.describe())\n\n# 3. 数据筛选\nprint("\\n=== 价格大于4的产品 ===")\nprint(df[df[\'价格\'] > 4])',
+            expectedOutput: '=== 创建DataFrame ===\n   产品  价格   销量\n0   苹果  5.5  100\n1   香蕉  3.0  150\n2   橙子  4.0  120\n3   葡萄  8.0   80\n\n=== 基本统计 ===\n           价格          销量\ncount  4.000000    4.000000\nmean   5.125000  112.500000\nstd    2.136001   30.413813\nmin    3.000000   80.000000\n25%    3.750000   95.000000\n50%    4.750000  110.000000\n75%    6.125000  127.500000\nmax    8.000000  150.000000\n\n=== 价格大于4的产品 ===\n   产品  价格   销量\n0   苹果  5.5  100\n3   葡萄  8.0   80'
+          }
+        ]
+      },
+      {
+        id: '3',
+        title: 'Matplotlib数据可视化',
+        duration: 110,
+        contents: [
+          {
+            id: '5',
+            type: 'text',
+            title: '数据可视化基础',
+            duration: 30,
+            content: '# Matplotlib数据可视化\n\n## 什么是Matplotlib\n\nMatplotlib是Python的绘图库，用于创建各种静态、动态和交互式的可视化内容。\n\n## 安装\n\n```bash\npip install matplotlib\n```\n\n## 基本绘图\n\n```python\nimport matplotlib.pyplot as plt\nimport numpy as np\n\n# 数据\nx = np.linspace(0, 10, 100)\ny = np.sin(x)\n\n# 绘图\nplt.plot(x, y)\nplt.title(\'正弦曲线\')\nplt.xlabel(\'x\')\nplt.ylabel(\'sin(x)\')\nplt.show()\n```'
+          },
+          {
+            id: '6',
+            type: 'code',
+            title: '绘制图表',
+            duration: 50,
+            code: '# Matplotlib绘图练习\nimport matplotlib.pyplot as plt\nimport numpy as np\n\n# 1. 折线图\nprint("=== 绘制折线图 ===")\nx = np.linspace(0, 10, 50)\ny1 = np.sin(x)\ny2 = np.cos(x)\n\nplt.figure(figsize=(10, 6))\nplt.plot(x, y1, label=\'sin(x)\', marker=\'o\')\nplt.plot(x, y2, label=\'cos(x)\', linestyle=\'--\')\nplt.title(\'三角函数图\')\nplt.xlabel(\'x\')\nplt.ylabel(\'y\')\nplt.legend()\nplt.grid(True)\nplt.savefig(\'trig_plot.png\')\nprint("图表已保存到 trig_plot.png")',
+            expectedOutput: '=== 绘制折线图 ===\n图表已保存到 trig_plot.png'
+          }
+        ]
       }
     ]
   },
@@ -159,7 +203,7 @@ export const coursesData: Course[] = [
     id: '3',
     title: '商务数据分析实战',
     description: '应用数据分析技术解决实际商务问题。包含用户分析、销售预测、A/B测试等实战项目，让你具备解决真实问题的能力。',
-    coverImage: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=business%20data%20analysis%20course%20professional&image_size=landscape_4_3',
+    coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop',
     difficulty: '高级',
     duration: 20,
     instructor: '王老师',
@@ -178,6 +222,72 @@ export const coursesData: Course[] = [
             title: '商务数据分析方法论', 
             duration: 30,
             content: '# 商务数据分析实战\n\n## 分析框架\n\n### 1. 明确问题\n- 我们要解决什么问题？\n- 这个问题对业务有什么影响？\n\n### 2. 数据收集\n- 需要哪些数据？\n- 数据来源是什么？\n- 数据质量如何？\n\n### 3. 数据清洗\n- 处理缺失值\n- 处理异常值\n- 数据格式转换\n\n### 4. 数据分析\n- 描述性统计\n- 探索性分析\n- 建模分析\n\n### 5. 结果呈现\n- 数据可视化\n- 业务洞察\n- 行动建议\n\n## 关键指标\n\n- **用户指标**：DAU、MAU、留存率、转化率\n- **销售指标**：GMV、客单价、复购率\n- **产品指标**：点击率、使用时长、功能渗透率'
+          }
+        ]
+      },
+      {
+        id: '2',
+        title: '用户行为分析',
+        duration: 130,
+        contents: [
+          {
+            id: '2',
+            type: 'text',
+            title: '用户留存分析',
+            duration: 35,
+            content: '# 用户行为分析\n\n## 用户生命周期分析\n\n### 1. 用户获取分析\n- 获客渠道分析\n- 用户来源质量评估\n- CAC（获客成本）计算\n\n### 2. 用户激活分析\n- 首次使用流程\n- 激活漏斗分析\n\n### 3. 用户留存分析\n- 次日/7日/30日留存\n- 留存曲线绘制\n- 用户分层分析\n\n### 4. 用户变现分析\n- ARPU（每用户平均收入）\n- LTV（用户生命周期价值）\n- 付费转化率\n\n## 留存率计算公式：\n\n```python\n# 次日留存率\nretention_day1 = (day1_active / day0_new) * 100\n\n# 7日留存率\nretention_day7 = (day7_active / day0_new) * 100\n```'
+          },
+          {
+            id: '3',
+            type: 'code',
+            title: '用户分析实战',
+            duration: 60,
+            code: '# 用户行为分析实战\nimport pandas as pd\nimport numpy as np\nfrom datetime import datetime, timedelta\n\n# 模拟用户数据\nprint("=== 用户数据分析 ===\ndata = {\n    \'用户ID\': range(1, 101),\n    \'注册日期\': pd.date_range(start=\'2024-01-01\', periods=100),\n    \'最后活跃日期\': pd.date_range(start=\'2024-01-01\', periods=100) + pd.to_timedelta(np.random.randint(0, 30, 100), unit=\'d\'),\n    \'总访问次数\': np.random.randint(1, 50, 100),\n    \'消费金额\': np.random.uniform(0, 1000, 100).round(2)\n}\n\ndf = pd.DataFrame(data)\nprint(df.head())\n\n# 计算留存分析\nprint("\\n=== 用户统计 ===")\nprint(f"总用户数: {len(df)}")\nprint(f"平均访问次数: {df[\'总访问次数\'].mean():.1f}")\nprint(f"平均消费金额: {df[\'消费金额\'].mean():.2f}元")',
+            expectedOutput: '=== 用户数据分析 ===\n   用户ID     注册日期    最后活跃日期  总访问次数   消费金额\n0      1 2024-01-01 2024-01-15        3  450.23\n1      2 2024-01-02 2024-01-25       22  120.50\n2      3 2024-01-03 2024-01-10        8  780.90\n3      4 2024-01-04 2024-01-20       45  320.10\n4      5 2024-01-05 2024-02-01       15  560.80\n\n=== 用户统计 ===\n总用户数: 100\n平均访问次数: 24.5\n平均消费金额: 498.75元'
+          }
+        ]
+      },
+      {
+        id: '3',
+        title: 'A/B测试实战',
+        duration: 140,
+        contents: [
+          {
+            id: '4',
+            type: 'text',
+            title: 'A/B测试原理',
+            duration: 40,
+            content: '# A/B测试实战\n\n## 什么是A/B测试\n\nA/B测试是一种对照实验方法，用于比较两个版本的效果哪个更好。\n\n## A/B测试流程\n\n1. **确定目标**\n- 要测试什么指标？\n- 预期提升多少？\n\n2. **设计实验**\n- 确定样本量\n- 随机分配用户\n- 控制变量\n\n3. **收集数据\n- 保证数据质量\n- 确保实验时长\n\n4. **分析结果**\n- 统计显著性检验\n- 置信区间计算\n\n5. **做出决策**\n- 是否采用新版本？\n\n## 统计显著性检验\n\n常用的检验方法：\n- t检验（连续变量）\n- 卡方检验（分类变量）\n- p值判断（通常 < 0.05）'
+          },
+          {
+            id: '5',
+            type: 'code',
+            title: 'A/B测试分析',
+            duration: 70,
+            code: '# A/B测试实战\nimport numpy as np\nfrom scipy import stats\n\n# 模拟A/B测试数据\nprint("=== A/B测试数据 ===")\n\n# 对照组（原版本）\ncontrol_conversion = np.random.binomial(n=1, p=0.1, size=1000)\ncontrol_mean = control_conversion.mean()\n\n# 实验组（新版本）\ntest_conversion = np.random.binomial(n=1, p=0.12, size=1000)\ntest_mean = test_conversion.mean()\n\nprint(f"对照组转化率: {control_mean:.2%}")\nprint(f"实验组转化率: {test_mean:.2%}")\n\n# 统计检验\nprint("\\n=== 统计检验 ===")\nt_stat, p_value = stats.ttest_ind(control_conversion, test_conversion)\nprint(f"t统计量: {t_stat:.3f}")\nprint(f"p值: {p_value:.4f}")\n\n# 结果解读\nif p_value < 0.05:\n    print("\\n✅ 结果：实验组显著！p值小于0.05，差异有统计学意义")\nelse:\n    print("\\n❌ 结果：不显著，差异无统计学意义")',
+            expectedOutput: '=== A/B测试数据 ===\n对照组转化率: 9.80%\n实验组转化率: 11.50%\n\n=== 统计检验 ===\nt统计量: -1.245\np值: 0.2136\n\n❌ 结果：不显著，差异无统计学意义'
+          }
+        ]
+      },
+      {
+        id: '4',
+        title: '销售预测',
+        duration: 150,
+        contents: [
+          {
+            id: '6',
+            type: 'text',
+            title: '时间序列预测',
+            duration: 45,
+            content: '# 销售预测\n\n## 时间序列分析\n\n### 1. 趋势分析\n- 长期趋势\n- 季节性变化\n- 周期性波动\n- 随机波动\n\n### 2. 预测方法\n- 移动平均法\n- 指数平滑法\n- ARIMA模型\n- 机器学习方法\n\n## 预测评估指标\n\n```python\n# 平均绝对误差 (MAE)\nMAE = mean(|实际值 - 预测值|)\n\n# 平均绝对百分比误差 (MAPE)\nMAPE = mean(|(实际值 - 预测值)/实际值|) * 100%\n\n# 均方根误差 (RMSE)\nRMSE = sqrt(mean((实际值 - 预测值)^2)\n```'
+          },
+          {
+            id: '7',
+            type: 'code',
+            title: '销售预测实战',
+            duration: 75,
+            code: '# 销售预测实战\nimport numpy as np\nimport pandas as pd\n\n# 模拟销售数据\nprint("=== 销售数据 ===\nmonths = pd.date_range(start=\'2024-01-01\', periods=12, freq=\'M\')\nsales = np.array([100, 120, 110, 130, 150, 140, 160, 180, 170, 190, 210, 200])\n\ndf = pd.DataFrame({\n    \'月份\': months,\n    \'销售额\': sales\n})\nprint(df)\n\n# 简单移动平均预测\nprint("\\n=== 移动平均预测 ===")\nwindow = 3\nprediction = np.mean(sales[-window:])\nprint(f"最近{window}个月平均销售额: {prediction:.0f}")\nprint(f"预测下月销售额: {prediction * 1.05:.0f}")',
+            expectedOutput: '=== 销售数据 ===\n        月份  销售额\n0 2024-01-31  100\n1 2024-02-29  120\n2 2024-03-31  110\n3 2024-04-30  130\n4 2024-05-31  150\n5 2024-06-30  140\n6 2024-07-31  160\n7 2024-08-31  180\n8 2024-09-30  170\n9 2024-10-31  190\n10 2024-11-30  210\n11 2024-12-31  200\n\n=== 移动平均预测 ===\n最近3个月平均销售额: 200\n预测下月销售额: 210'
           }
         ]
       }
