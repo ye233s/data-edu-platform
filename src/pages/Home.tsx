@@ -21,6 +21,30 @@ const Home: React.FC = () => {
     setProgressMap(map)
   }, [])
 
+  // 课程排序：按学习路径（从基础到高级，从通用技能到行业实战）
+  const getSortedCourses = () => {
+    const order: {[key: string]: number} = {
+      'Python基础入门': 1,
+      'SQL数据分析实战': 2,
+      'Excel数据分析从入门到精通': 3,
+      '统计学基础与应用': 4,
+      '数据分析与可视化': 5,
+      '数据仓库实战': 6,
+      '商务数据分析实战': 7,
+      '电商数据分析实战': 8,
+      '金融数据分析': 9,
+      '零售数据分析实战': 10,
+    }
+    
+    return [...coursesData].sort((a, b) => {
+      const orderA = order[a.title] || 99
+      const orderB = order[b.title] || 99
+      return orderA - orderB
+    })
+  }
+
+  const sortedCourses = getSortedCourses()
+
   return (
     <Layout>
       {/* 英雄区 */}
@@ -43,7 +67,7 @@ const Home: React.FC = () => {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-center">推荐课程</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {coursesData.map(course => (
+            {sortedCourses.map(course => (
               <div key={course.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
                 <img src={course.coverImage} alt={course.title} className="w-full h-48 object-cover" />
                 <div className="p-6">
