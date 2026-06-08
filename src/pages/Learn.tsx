@@ -197,7 +197,7 @@ const Learn: React.FC = () => {
                   </div>
                 )}
 
-                {activeContent.type === 'code' && (
+                {(activeContent.type === 'code' || activeContent.type === 'excel') && (
                   <div className="mb-8">
                     <div className="flex justify-between items-center mb-4">
                       <h4 className="font-semibold text-lg">
