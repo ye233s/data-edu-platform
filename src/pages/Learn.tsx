@@ -272,21 +272,31 @@ const Learn: React.FC = () => {
                     )}
 
                     {activeEditorType === 'excel' && (
-                      <div className="border-2 border-gray-200 rounded-lg overflow-hidden shadow-lg">
-                        <div className="bg-green-100 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
-                          <span className="text-sm font-medium text-green-700">Excel</span>
-                          <span className="text-xs text-green-500">公式和函数练习</span>
-                        </div>
-                        <div className="bg-white p-6">
-                          <div className="mb-4 text-sm text-gray-600">
-                            💡 在下方输入Excel公式，如：<code className="bg-gray-100 px-2 py-1 rounded">=SUM(A1:A10)</code>
+                      <div className="mb-8">
+                        {activeContent.content && (
+                          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div 
+                              className="prose prose-sm max-w-none"
+                              dangerouslySetInnerHTML={{ __html: textToHtml(activeContent.content) }} 
+                            />
                           </div>
-                          <textarea
-                            className="w-full h-48 p-4 bg-gray-50 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-green-500 focus:outline-none"
-                            placeholder="在此输入Excel公式，例如：&#10;=SUM(A1:A10)&#10;=AVERAGE(B1:B5)&#10;=MAX(C1:C20)"
-                            value={userCode}
-                            onChange={(e) => setUserCode(e.target.value)}
-                          />
+                        )}
+                        <div className="border-2 border-green-200 rounded-lg overflow-hidden shadow-lg">
+                          <div className="bg-green-100 px-4 py-2 border-b border-green-200 flex items-center gap-2">
+                            <span className="text-sm font-medium text-green-700">Excel</span>
+                            <span className="text-xs text-green-500">公式和函数练习</span>
+                          </div>
+                          <div className="bg-white p-6">
+                            <div className="mb-4 text-sm text-gray-600">
+                              💡 在下方输入Excel公式，如：<code className="bg-gray-100 px-2 py-1 rounded">=SUM(A1:A10)</code>
+                            </div>
+                            <textarea
+                              className="w-full h-48 p-4 bg-gray-50 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-green-500 focus:outline-none"
+                              placeholder="在此输入Excel公式，例如：&#10;=SUM(A1:A10)&#10;=AVERAGE(B1:B5)&#10;=MAX(C1:C20)"
+                              value={userCode}
+                              onChange={(e) => setUserCode(e.target.value)}
+                            />
+                          </div>
                         </div>
                       </div>
                     )}
