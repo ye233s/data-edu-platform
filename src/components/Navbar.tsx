@@ -21,8 +21,6 @@ const Navbar: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center">
-            <Link to="/login" className="mr-4 text-gray-700 hover:text-blue-700">登录</Link>
-            <Link to="/register" className="bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800">注册</Link>
             <button className="md:hidden ml-4" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>

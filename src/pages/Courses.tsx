@@ -76,13 +76,12 @@ const Courses: React.FC = () => {
                 <div key={course.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                   <img src={course.coverImage} alt={course.title} className="w-full h-48 object-cover" />
                   <div className="p-6">
-                    <div className="flex justify-between items-center mb-3">
+                    <div className="mb-3">
                       <span className={`text-xs font-medium px-3 py-1 rounded-full ${
                         course.difficulty === '初级' ? 'bg-green-100 text-green-800' :
                         course.difficulty === '中级' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-red-100 text-red-800'
                       }`}>{course.difficulty}</span>
-                      <span className="text-gray-500 text-sm">{course.duration} 小时</span>
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{course.title}</h3>
                     <p className="text-gray-600 mb-4 line-clamp-3">{course.description}</p>

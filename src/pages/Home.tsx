@@ -33,9 +33,6 @@ const Home: React.FC = () => {
               <Link to="/courses" className="bg-white text-blue-700 px-6 py-3 rounded-md font-medium hover:bg-gray-100 text-center">
                 浏览课程
               </Link>
-              <Link to="/register" className="bg-orange-500 text-white px-6 py-3 rounded-md font-medium hover:bg-orange-600 text-center">
-                立即注册
-              </Link>
             </div>
           </div>
         </div>
@@ -50,13 +47,12 @@ const Home: React.FC = () => {
               <div key={course.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
                 <img src={course.coverImage} alt={course.title} className="w-full h-48 object-cover" />
                 <div className="p-6">
-                  <div className="flex justify-between items-center mb-2">
+                  <div className="mb-2">
                     <span className={`text-xs font-medium px-2.5 py-0.5 rounded ${
                       course.difficulty === '初级' ? 'bg-green-100 text-green-800' :
                       course.difficulty === '中级' ? 'bg-yellow-100 text-yellow-800' :
                       'bg-red-100 text-red-800'
                     }`}>{course.difficulty}</span>
-                    <span className="text-gray-500 text-sm">{course.duration} 小时</span>
                   </div>
                   <h3 className="text-xl font-semibold mb-2">{course.title}</h3>
                   <p className="text-gray-600 mb-4 line-clamp-2">{course.description}</p>

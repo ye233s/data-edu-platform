@@ -36,7 +36,6 @@ const CourseDetail: React.FC = () => {
                 </div>
                 <div className="space-y-2 mb-4">
                   <p><strong>难度：</strong>{course.difficulty}</p>
-                  <p><strong>时长：</strong>{course.duration} 小时</p>
                   <p><strong>讲师：</strong>{course.instructor}</p>
                 </div>
                 
