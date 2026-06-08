@@ -25,7 +25,8 @@ const Learn: React.FC = () => {
   const chapter = course.chapters.find(ch => ch.id === chapterId) || course.chapters[0]
   const [activeContentId, setActiveContentId] = useState(chapter.contents[0].id)
   const [codeOutput, setCodeOutput] = useState('')
-  const [userCode, setUserCode] = useState(chapter.contents.find(c => c.type === 'code')?.code || '')
+  const [userCode, setUserCode] = useState('')
+  const [activeEditorType, setActiveEditorType] = useState<'python' | 'sql' | 'excel' | 'statistics'>('python')
   const [showSuccess, setShowSuccess] = useState(false)
 
   const activeContent = chapter.contents.find(c => c.id === activeContentId) || chapter.contents[0]
@@ -33,8 +34,18 @@ const Learn: React.FC = () => {
   useEffect(() => {
     if (activeContent.type === 'code') {
       setUserCode(activeContent.code || '')
+      // 根据课程类型设置编辑器
+      if (course.title.includes('SQL')) {
+        setActiveEditorType('sql')
+      } else if (course.title.includes('Excel')) {
+        setActiveEditorType('excel')
+      } else if (course.title.includes('统计学')) {
+        setActiveEditorType('statistics')
+      } else {
+        setActiveEditorType('python')
+      }
     }
-  }, [activeContent])
+  }, [activeContent, course.title])
 
   const handleRunCode = () => {
     if (activeContent.expectedOutput) {
@@ -189,49 +200,117 @@ const Learn: React.FC = () => {
                 {activeContent.type === 'code' && (
                   <div className="mb-8">
                     <div className="flex justify-between items-center mb-4">
-                      <h4 className="font-semibold text-lg">🐍 Python 代码编辑器</h4>
-                      <div className="flex gap-2">
-                        <button 
-                          className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-green-800 font-medium shadow transition-all flex items-center gap-2"
-                          onClick={handleRunCode}
-                        >
-                          <span>▶</span>
-                          <span>运行代码</span>
-                        </button>
-                      </div>
+                      <h4 className="font-semibold text-lg">
+                        {activeEditorType === 'python' && '🐍 Python 代码编辑器'}
+                        {activeEditorType === 'sql' && '🗄️ SQL 查询编辑器'}
+                        {activeEditorType === 'excel' && '📊 Excel 公式练习'}
+                        {activeEditorType === 'statistics' && '📈 统计计算器'}
+                      </h4>
+                      <button 
+                        className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-green-800 font-medium shadow transition-all flex items-center gap-2"
+                        onClick={handleRunCode}
+                      >
+                        <span>▶</span>
+                        <span>运行代码</span>
+                      </button>
                     </div>
-                    <div className="border-2 border-gray-200 rounded-lg overflow-hidden shadow-lg">
-                      <div className="bg-gray-100 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-700">Python</span>
-                        <span className="text-xs text-gray-500">编辑器</span>
+                    
+                    {activeEditorType === 'python' && (
+                      <div className="border-2 border-gray-200 rounded-lg overflow-hidden shadow-lg">
+                        <div className="bg-gray-100 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-700">Python</span>
+                          <span className="text-xs text-gray-500">编辑器</span>
+                        </div>
+                        <Editor
+                          height="400px"
+                          defaultLanguage="python"
+                          theme="vs-dark"
+                          value={userCode}
+                          onChange={(value) => setUserCode(value || '')}
+                          options={{
+                            fontSize: 14,
+                            fontFamily: "'Fira Code', 'Consolas', monospace",
+                            minimap: { enabled: false },
+                            lineNumbers: 'on',
+                            scrollBeyondLastLine: false,
+                            automaticLayout: true,
+                            tabSize: 4,
+                            wordWrap: 'on',
+                            padding: { top: 10, bottom: 10 },
+                            renderLineHighlight: 'all',
+                          }}
+                        />
                       </div>
-                      <Editor
-                        height="400px"
-                        defaultLanguage="python"
-                        theme="vs-dark"
-                        value={userCode}
-                        onChange={(value) => setUserCode(value || '')}
-                        options={{
-                          fontSize: 14,
-                          fontFamily: "'Fira Code', 'Consolas', monospace",
-                          minimap: { enabled: false },
-                          lineNumbers: 'on',
-                          scrollBeyondLastLine: false,
-                          automaticLayout: true,
-                          tabSize: 4,
-                          insertSpaces: true,
-                          wordWrap: 'on',
-                          padding: { top: 10, bottom: 10 },
-                          renderLineHighlight: 'all',
-                          cursorBlinking: 'smooth',
-                          smoothScrolling: true,
-                          contextmenu: true,
-                          folding: true,
-                          lineDecorationsWidth: 10,
-                          lineNumbersMinChars: 3,
-                        }}
-                      />
-                    </div>
+                    )}
+
+                    {activeEditorType === 'sql' && (
+                      <div className="border-2 border-gray-200 rounded-lg overflow-hidden shadow-lg">
+                        <div className="bg-blue-100 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
+                          <span className="text-sm font-medium text-blue-700">SQL</span>
+                          <span className="text-xs text-blue-500">MySQL / PostgreSQL 语法</span>
+                        </div>
+                        <Editor
+                          height="400px"
+                          defaultLanguage="sql"
+                          theme="vs-dark"
+                          value={userCode}
+                          onChange={(value) => setUserCode(value || '')}
+                          options={{
+                            fontSize: 14,
+                            fontFamily: "'Fira Code', 'Consolas', monospace",
+                            minimap: { enabled: false },
+                            lineNumbers: 'on',
+                            scrollBeyondLastLine: false,
+                            automaticLayout: true,
+                            tabSize: 2,
+                            wordWrap: 'on',
+                            padding: { top: 10, bottom: 10 },
+                            renderLineHighlight: 'line',
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {activeEditorType === 'excel' && (
+                      <div className="border-2 border-gray-200 rounded-lg overflow-hidden shadow-lg">
+                        <div className="bg-green-100 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
+                          <span className="text-sm font-medium text-green-700">Excel</span>
+                          <span className="text-xs text-green-500">公式和函数练习</span>
+                        </div>
+                        <div className="bg-white p-6">
+                          <div className="mb-4 text-sm text-gray-600">
+                            💡 在下方输入Excel公式，如：<code className="bg-gray-100 px-2 py-1 rounded">=SUM(A1:A10)</code>
+                          </div>
+                          <textarea
+                            className="w-full h-48 p-4 bg-gray-50 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-green-500 focus:outline-none"
+                            placeholder="在此输入Excel公式，例如：&#10;=SUM(A1:A10)&#10;=AVERAGE(B1:B5)&#10;=MAX(C1:C20)"
+                            value={userCode}
+                            onChange={(e) => setUserCode(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {activeEditorType === 'statistics' && (
+                      <div className="border-2 border-gray-200 rounded-lg overflow-hidden shadow-lg">
+                        <div className="bg-purple-100 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
+                          <span className="text-sm font-medium text-purple-700">统计计算</span>
+                          <span className="text-xs text-purple-500">输入数值进行计算</span>
+                        </div>
+                        <div className="bg-white p-6">
+                          <div className="mb-4 text-sm text-gray-600">
+                            💡 输入数值数据，系统将自动计算统计指标
+                          </div>
+                          <textarea
+                            className="w-full h-48 p-4 bg-gray-50 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-purple-500 focus:outline-none"
+                            placeholder="在此输入数值（每行一个），例如：&#10;85&#10;92&#10;78&#10;90&#10;88"
+                            value={userCode}
+                            onChange={(e) => setUserCode(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    
                     {codeOutput && (
                       <div className="mt-4">
                         <div className="flex items-center gap-2 mb-2">
