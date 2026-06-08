@@ -56,36 +56,83 @@ const Learn: React.FC = () => {
         let result = ''
         let vars: Record<string, any> = {}
         
+        const parseValue = (expr: string): any => {
+          expr = expr.trim()
+          if (!isNaN(parseFloat(expr))) {
+            return parseFloat(expr)
+          }
+          if ((expr.startsWith('"') && expr.endsWith('"')) || (expr.startsWith("'") && expr.endsWith("'"))) {
+            return expr.slice(1, -1)
+          }
+          if (vars[expr] !== undefined) {
+            return vars[expr]
+          }
+          const ops = ['+', '-', '*', '/']
+          for (const op of ops) {
+            const parts = expr.split(op).map(s => s.trim())
+            if (parts.length === 2) {
+              const left = parseValue(parts[0])
+              const right = parseValue(parts[1])
+              if (typeof left === 'number' && typeof right === 'number') {
+                switch(op) {
+                  case '+': return left + right
+                  case '-': return left - right
+                  case '*': return left * right
+                  case '/': return left / right
+                }
+              }
+            }
+          }
+          return expr
+        }
+        
         for (const line of lines) {
           const trimmed = line.trim()
           if (trimmed.startsWith('#')) continue
           if (trimmed === '') continue
           
           if (trimmed.startsWith('print(')) {
-            const content = trimmed.slice(6, -1)
-            if (content.startsWith('"') || content.startsWith("'")) {
-              result += content.slice(1, -1) + '\n'
-            } else if (vars[content]) {
-              result += vars[content] + '\n'
-            } else {
-              result += content + '\n'
+            const argsStr = trimmed.slice(6, -1)
+            const args: string[] = []
+            let current = ''
+            let inString = false
+            let quoteChar = ''
+            
+            for (let i = 0; i < argsStr.length; i++) {
+              const char = argsStr[i]
+              if ((char === '"' || char === "'") && (i === 0 || argsStr[i-1] !== '\\')) {
+                if (inString && char === quoteChar) {
+                  inString = false
+                } else if (!inString) {
+                  inString = true
+                  quoteChar = char
+                }
+              }
+              if (char === ',' && !inString) {
+                args.push(current.trim())
+                current = ''
+              } else {
+                current += char
+              }
             }
+            args.push(current.trim())
+            
+            const printedParts: string[] = []
+            for (const arg of args) {
+              const value = parseValue(arg)
+              printedParts.push(String(value))
+            }
+            result += printedParts.join(' ') + '\n'
           } else if (trimmed.includes('=')) {
-            const [key, value] = trimmed.split('=').map(s => s.trim())
-            if (!isNaN(parseFloat(value))) {
-              vars[key] = parseFloat(value)
-            } else if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-              vars[key] = value.slice(1, -1)
-            } else if (vars[value]) {
-              vars[key] = vars[value]
-            } else {
-              vars[key] = value
-            }
+            const equalsIndex = trimmed.indexOf('=')
+            const key = trimmed.substring(0, equalsIndex).trim()
+            const valueExpr = trimmed.substring(equalsIndex + 1).trim()
+            vars[key] = parseValue(valueExpr)
           }
         }
         
         output = result || '✅ 代码执行成功！\n(变量已保存)'
-      } catch {
+      } catch (e) {
         output = '❌ 代码执行出错，请检查语法'
       }
     } else if (activeEditorType === 'sql') {
