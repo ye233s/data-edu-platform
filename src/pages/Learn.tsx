@@ -48,11 +48,115 @@ const Learn: React.FC = () => {
   }, [activeContent, course.title])
 
   const handleRunCode = () => {
-    if (activeContent.expectedOutput) {
-      setCodeOutput(activeContent.expectedOutput)
-    } else {
-      setCodeOutput('✅ 代码已运行！\n(注：这是演示环境，实际运行需要真实的Python解释器)')
+    let output = ''
+    
+    try {
+      if (activeEditorType === 'python') {
+        // Python代码简单模拟执行
+        const code = userCode
+        const lines = code.split('\n')
+        const capturedOutput: string[] = []
+        
+        // 模拟执行print语句
+        for (const line of lines) {
+          const trimmed = line.trim()
+          if (trimmed.startsWith('print(')) {
+            const contentMatch = trimmed.match(/print\(([\s\S]*)\)/)
+            if (contentMatch) {
+              let expr = contentMatch[1]
+              // 简单替换f-string
+              expr = expr.replace(/f"([^"]+)"/g, (_, m) => {
+                let res = m
+                res = res.replace(/\{([^}]+)\}/g, (_, varName) => {
+                  const varMatch = code.match(new RegExp(`${varName}\\s*=\\s*(.+)`))
+                  if (varMatch) return varMatch[1].replace(/['"]/g, '')
+                  return `{${varName}}`
+                })
+                return res
+              })
+              // 简单的字符串处理
+              const cleanExpr = expr.replace(/^['"]|['"]$/g, '')
+              capturedOutput.push(cleanExpr)
+            }
+          }
+        }
+        
+        if (capturedOutput.length > 0) {
+          output = capturedOutput.join('\n')
+        } else if (activeContent.expectedOutput) {
+          output = activeContent.expectedOutput
+        } else {
+          output = '✅ Python代码已运行！\n(注：这是演示环境，仅支持基础语法)'
+        }
+      } else if (activeEditorType === 'sql') {
+        // SQL简单模拟执行
+        const code = userCode.toLowerCase()
+        
+        if (code.includes('select')) {
+          if (code.includes('count') || code.includes('sum') || code.includes('avg')) {
+            output = '-- 查询结果 --\n总计: 3条记录\n合计: 38500.00'
+          } else if (code.includes('where')) {
+            output = '-- 筛选结果 --\n找到 2条记录'
+          } else {
+            output = '-- 表格数据 --\nid  产品      价格    库存\n1   笔记本电脑  5999.00  50\n2   无线鼠标   89.00   200\n3   机械键盘   299.00  80'
+          }
+        } else if (code.includes('create') || code.includes('insert')) {
+          output = '-- 操作成功 --\n✓ 执行完成'
+        } else {
+          output = activeContent.expectedOutput || '-- SQL已执行 --'
+        }
+      } else if (activeEditorType === 'excel') {
+        // Excel公式模拟
+        const formula = userCode.trim()
+        if (formula.startsWith('=')) {
+          if (formula.toLowerCase().startsWith('=sum(')) {
+            const match = formula.match(/sum\(([A-Z]\d+):([A-Z]\d+)\)/i)
+            if (match) {
+              output = `SUM(${match[1]}:${match[2]}) = 350`
+            } else {
+              output = 'SUM计算结果: 17400'
+            }
+          } else if (formula.toLowerCase().startsWith('=average(')) {
+            output = 'AVERAGE计算结果: 85.75'
+          } else if (formula.toLowerCase().startsWith('=max(')) {
+            output = 'MAX计算结果: 92'
+          } else if (formula.toLowerCase().startsWith('=min(')) {
+            output = 'MIN计算结果: 78'
+          } else {
+            output = `公式 ${formula} 已计算`
+          }
+        } else {
+          output = '请输入Excel公式，例如：=SUM(A1:A10)'
+        }
+      } else if (activeEditorType === 'statistics') {
+        // 统计计算
+        const lines = userCode.split('\n').filter(line => line.trim())
+        const numbers: number[] = []
+        
+        for (const line of lines) {
+          const num = parseFloat(line.trim())
+          if (!isNaN(num)) numbers.push(num)
+        }
+        
+        if (numbers.length > 0) {
+          const mean = numbers.reduce((a, b) => a + b, 0) / numbers.length
+          const sorted = [...numbers].sort((a, b) => a - b)
+          const median = sorted.length % 2 === 0 
+            ? (sorted[sorted.length/2 - 1] + sorted[sorted.length/2]) / 2 
+            : sorted[Math.floor(sorted.length/2)]
+          const min = Math.min(...numbers)
+          const max = Math.max(...numbers)
+          
+          output = `=== 统计分析 ===\n样本数: ${numbers.length}\n均值: ${mean.toFixed(2)}\n中位数: ${median.toFixed(2)}\n最小值: ${min}\n最大值: ${max}`
+        } else {
+          output = '请输入数值数据，每行一个数字'
+        }
+      }
+    } catch (e) {
+      output = `⚠️ 执行出错: ${(e as Error).message}`
     }
+    
+    setCodeOutput(output)
     
     if (!isContentComplete(course.id, chapter.id, activeContentId)) {
       markContentComplete(course.id, chapter.id, activeContentId)
