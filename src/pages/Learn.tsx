@@ -56,27 +56,88 @@ const Learn: React.FC = () => {
         const code = userCode
         const lines = code.split('\n')
         const capturedOutput: string[] = []
+        const variables: Record<string, string> = {}
         
-        // 模拟执行print语句
+        // 先提取所有变量赋值
+        for (const line of lines) {
+          const trimmed = line.trim()
+          const assignMatch = trimmed.match(/^(\w+)\s*=\s*(.+)$/)
+          if (assignMatch && !trimmed.startsWith('print')) {
+            const varName = assignMatch[1]
+            let varValue = assignMatch[2].trim()
+            // 去掉字符串引号
+            if ((varValue.startsWith('"') && varValue.endsWith('"')) ||
+                (varValue.startsWith("'") && varValue.endsWith("'"))) {
+              varValue = varValue.slice(1, -1)
+            }
+            variables[varName] = varValue
+          }
+        }
+        
+        // 执行print语句
         for (const line of lines) {
           const trimmed = line.trim()
           if (trimmed.startsWith('print(')) {
             const contentMatch = trimmed.match(/print\(([\s\S]*)\)/)
             if (contentMatch) {
-              let expr = contentMatch[1]
-              // 简单替换f-string
-              expr = expr.replace(/f"([^"]+)"/g, (_, m) => {
-                let res = m
-                res = res.replace(/\{([^}]+)\}/g, (_, varName) => {
-                  const varMatch = code.match(new RegExp(`${varName}\\s*=\\s*(.+)`))
-                  if (varMatch) return varMatch[1].replace(/['"]/g, '')
-                  return `{${varName}}`
-                })
-                return res
-              })
-              // 简单的字符串处理
-              const cleanExpr = expr.replace(/^['"]|['"]$/g, '')
-              capturedOutput.push(cleanExpr)
+              const argsStr = contentMatch[1]
+              // 解析多个参数（逗号分隔）
+              const args: string[] = []
+              let currentArg = ''
+              let inString = false
+              let stringChar = ''
+              let bracketDepth = 0
+              
+              for (let i = 0; i < argsStr.length; i++) {
+                const char = argsStr[i]
+                
+                if ((char === '"' || char === "'") && !inString) {
+                  inString = true
+                  stringChar = char
+                  currentArg += char
+                } else if (char === stringChar && inString) {
+                  inString = false
+                  currentArg += char
+                } else if (char === ',' && !inString && bracketDepth === 0) {
+                  args.push(currentArg.trim())
+                  currentArg = ''
+                } else {
+                  currentArg += char
+                }
+              }
+              if (currentArg.trim()) args.push(currentArg.trim())
+              
+              // 处理每个参数
+              const processedArgs: string[] = []
+              for (const arg of args) {
+                let processed = arg.trim()
+                
+                // 如果是字符串字面量
+                if ((processed.startsWith('"') && processed.endsWith('"')) ||
+                    (processed.startsWith("'") && processed.endsWith("'"))) {
+                  processed = processed.slice(1, -1)
+                } 
+                // 如果是变量
+                else if (processed in variables) {
+                  processed = variables[processed]
+                }
+                // 简单的表达式计算（仅数字运算）
+                else {
+                  const simpleExpr = processed.replace(/\s/g, '')
+                  if (/^[\d+\-*/.()]+$/.test(simpleExpr)) {
+                    try {
+                      // eslint-disable-next-line no-eval
+                      processed = String(eval(simpleExpr))
+                    } catch {
+                      // 如果计算失败，保持原样
+                    }
+                  }
+                }
+                
+                processedArgs.push(processed)
+              }
+              
+              capturedOutput.push(processedArgs.join(' '))
             }
           }
         }
