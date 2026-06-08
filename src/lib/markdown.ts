@@ -67,6 +67,9 @@ export function textToHtml(text: string): string {
   // 处理行内代码
   html = html.replace(/`([^`]+)`/g, '<code class="bg-gray-100 text-purple-700 px-1 py-0.5 rounded text-sm font-mono">$1</code>')
   
+  // 处理链接
+  html = html.replace(/\[([^\]]*)\]\(([^)]*)\)/g, '<a href="$2" class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline font-medium" download>$1</a>')
+  
   // 处理列表
   html = html.replace(/^\- (.*$)/gim, '<li class="ml-6 mb-2 list-disc">$1</li>')
   html = html.replace(/^\* (.*$)/gim, '<li class="ml-6 mb-2 list-disc">$1</li>')
