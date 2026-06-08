@@ -8,12 +8,37 @@ const Courses: React.FC = () => {
   const [filter, setFilter] = useState('全部')
   const [search, setSearch] = useState('')
 
-  const filteredCourses = coursesData.filter(course => {
+  // 课程排序：按学习路径（从基础到高级，从通用技能到行业实战）
+  const sortCourses = (courses: typeof coursesData) => {
+    const order = {
+      // 初级基础技能
+      'Python基础入门': 1,
+      'SQL数据分析实战': 2,
+      'Excel数据分析从入门到精通': 3,
+      '统计学基础与应用': 4,
+      // 中级进阶技能
+      '数据分析与可视化': 5,
+      '数据仓库实战': 6,
+      // 高级行业实战
+      '商务数据分析实战': 7,
+      '电商数据分析实战': 8,
+      '金融数据分析': 9,
+      '零售数据分析实战': 10,
+    }
+    
+    return [...courses].sort((a, b) => {
+      const orderA = order[a.title as keyof typeof order] || 99
+      const orderB = order[b.title as keyof typeof order] || 99
+      return orderA - orderB
+    })
+  }
+
+  const filteredCourses = sortCourses(coursesData.filter(course => {
     const matchesDifficulty = filter === '全部' || course.difficulty === filter
     const matchesSearch = course.title.toLowerCase().includes(search.toLowerCase()) || 
                          course.description.toLowerCase().includes(search.toLowerCase())
     return matchesDifficulty && matchesSearch
-  })
+  }))
 
   return (
     <Layout>
