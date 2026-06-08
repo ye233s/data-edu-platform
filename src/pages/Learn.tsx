@@ -4,6 +4,7 @@ import Layout from '../components/Layout'
 import { getCourseById } from '../lib/courseData'
 import { markContentComplete, isContentComplete, getCourseProgress } from '../lib/storage'
 import { textToHtml } from '../lib/markdown'
+import Editor from '@monaco-editor/react'
 
 const Learn: React.FC = () => {
   const { courseId, chapterId } = useParams<{ courseId: string; chapterId: string }>()
@@ -191,22 +192,53 @@ const Learn: React.FC = () => {
                       <h4 className="font-semibold text-lg">🐍 Python 代码编辑器</h4>
                       <div className="flex gap-2">
                         <button 
-                          className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 font-medium shadow transition-all"
+                          className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-green-800 font-medium shadow transition-all flex items-center gap-2"
                           onClick={handleRunCode}
                         >
-                          ▶ 运行代码
+                          <span>▶</span>
+                          <span>运行代码</span>
                         </button>
                       </div>
                     </div>
-                    <textarea 
-                      className="w-full h-64 p-4 bg-gray-900 text-green-400 rounded-lg font-mono text-sm resize-vertical" 
-                      value={userCode}
-                      onChange={(e) => setUserCode(e.target.value)}
-                    ></textarea>
+                    <div className="border-2 border-gray-200 rounded-lg overflow-hidden shadow-lg">
+                      <div className="bg-gray-100 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
+                        <span className="text-sm font-medium text-gray-700">Python</span>
+                        <span className="text-xs text-gray-500">编辑器</span>
+                      </div>
+                      <Editor
+                        height="400px"
+                        defaultLanguage="python"
+                        theme="vs-dark"
+                        value={userCode}
+                        onChange={(value) => setUserCode(value || '')}
+                        options={{
+                          fontSize: 14,
+                          fontFamily: "'Fira Code', 'Consolas', monospace",
+                          minimap: { enabled: false },
+                          lineNumbers: 'on',
+                          scrollBeyondLastLine: false,
+                          automaticLayout: true,
+                          tabSize: 4,
+                          insertSpaces: true,
+                          wordWrap: 'on',
+                          padding: { top: 10, bottom: 10 },
+                          renderLineHighlight: 'all',
+                          cursorBlinking: 'smooth',
+                          smoothScrolling: true,
+                          contextmenu: true,
+                          folding: true,
+                          lineDecorationsWidth: 10,
+                          lineNumbersMinChars: 3,
+                        }}
+                      />
+                    </div>
                     {codeOutput && (
                       <div className="mt-4">
-                        <h4 className="font-medium mb-2 text-gray-700">📤 运行结果</h4>
-                        <div className="bg-gray-100 p-4 rounded-lg font-mono text-sm whitespace-pre border-l-4 border-green-500">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-medium text-gray-700">📤 运行结果</h4>
+                          <span className="text-xs text-gray-500">(演示环境)</span>
+                        </div>
+                        <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm whitespace-pre-wrap border-l-4 border-green-500 shadow-inner">
                           {codeOutput}
                         </div>
                       </div>
