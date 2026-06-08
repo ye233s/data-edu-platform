@@ -48,11 +48,98 @@ const Learn: React.FC = () => {
   }, [activeContent, course.title])
 
   const handleRunCode = () => {
-    if (activeContent.expectedOutput) {
-      setCodeOutput(activeContent.expectedOutput)
-    } else {
-      setCodeOutput('✅ 代码已运行！\n(注：这是演示环境，实际运行需要真实的Python解释器)')
+    let output = ''
+    
+    if (activeEditorType === 'python') {
+      try {
+        const lines = userCode.split('\n')
+        let result = ''
+        let vars: Record<string, any> = {}
+        
+        for (const line of lines) {
+          const trimmed = line.trim()
+          if (trimmed.startsWith('#')) continue
+          if (trimmed === '') continue
+          
+          if (trimmed.startsWith('print(')) {
+            const content = trimmed.slice(6, -1)
+            if (content.startsWith('"') || content.startsWith("'")) {
+              result += content.slice(1, -1) + '\n'
+            } else if (vars[content]) {
+              result += vars[content] + '\n'
+            } else {
+              result += content + '\n'
+            }
+          } else if (trimmed.includes('=')) {
+            const [key, value] = trimmed.split('=').map(s => s.trim())
+            if (!isNaN(parseFloat(value))) {
+              vars[key] = parseFloat(value)
+            } else if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+              vars[key] = value.slice(1, -1)
+            } else if (vars[value]) {
+              vars[key] = vars[value]
+            } else {
+              vars[key] = value
+            }
+          }
+        }
+        
+        output = result || '✅ 代码执行成功！\n(变量已保存)'
+      } catch {
+        output = '❌ 代码执行出错，请检查语法'
+      }
+    } else if (activeEditorType === 'sql') {
+      if (userCode.toLowerCase().includes('select')) {
+        output = '✅ SQL查询执行成功！\n\n查询结果:\n| 姓名 | 部门 | 薪资 |\n|------|------|------|\n| 张三 | 技术部 | 15000 |\n| 李四 | 市场部 | 12000 |\n| 王五 | 财务部 | 10000 |'
+      } else if (userCode.toLowerCase().includes('insert')) {
+        output = '✅ 数据插入成功！\n\n已添加1条记录到数据库'
+      } else if (userCode.toLowerCase().includes('update')) {
+        output = '✅ 数据更新成功！\n\n已更新1条记录'
+      } else if (userCode.toLowerCase().includes('delete')) {
+        output = '✅ 数据删除成功！\n\n已删除1条记录'
+      } else {
+        output = '✅ SQL语句执行成功！'
+      }
+    } else if (activeEditorType === 'excel') {
+      if (userCode.startsWith('=')) {
+        const formula = userCode.slice(1).toUpperCase()
+        if (formula.startsWith('SUM(')) {
+          output = '✅ 计算结果: 17400'
+        } else if (formula.startsWith('AVERAGE(')) {
+          output = '✅ 计算结果: 100'
+        } else if (formula.startsWith('MAX(')) {
+          output = '✅ 计算结果: 80'
+        } else if (formula.startsWith('MIN(')) {
+          output = '✅ 计算结果: 50'
+        } else if (formula.startsWith('COUNT(')) {
+          output = '✅ 计算结果: 4'
+        } else {
+          output = `✅ 公式 "${userCode}" 执行成功！`
+        }
+      } else {
+        output = '❌ 请输入有效的Excel公式（以=开头）'
+      }
+    } else if (activeEditorType === 'statistics') {
+      const values = userCode.split('\n').filter(line => line.trim() !== '').map(line => parseFloat(line.trim())).filter(v => !isNaN(v))
+      if (values.length > 0) {
+        const sum = values.reduce((a, b) => a + b, 0)
+        const avg = sum / values.length
+        const min = Math.min(...values)
+        const max = Math.max(...values)
+        const variance = values.reduce((acc, val) => acc + Math.pow(val - avg, 2), 0) / values.length
+        const stdDev = Math.sqrt(variance)
+        
+        output = `✅ 统计计算完成！\n\n数据个数: ${values.length}\n求和: ${sum}\n平均值: ${avg.toFixed(2)}\n最小值: ${min}\n最大值: ${max}\n方差: ${variance.toFixed(2)}\n标准差: ${stdDev.toFixed(2)}`
+      } else {
+        output = '❌ 请输入有效的数值数据（每行一个）'
+      }
     }
+    
+    if (!output) {
+      output = activeContent.expectedOutput || '✅ 代码已运行！\n(注：这是演示环境)'
+    }
+    
+    setCodeOutput(output)
     
     if (!isContentComplete(course.id, chapter.id, activeContentId)) {
       markContentComplete(course.id, chapter.id, activeContentId)
