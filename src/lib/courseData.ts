@@ -51,10 +51,10 @@ export const coursesData: Course[] = [
         contents: [
           { 
             id: '1', 
-            type: 'video', 
+            type: 'text', 
             title: 'Python的历史和应用', 
-            duration: 10,
-            videoUrl: 'https://www.youtube.com/embed/Y8Tko2YC5hA'
+            duration: 15,
+            content: '# Python的历史和应用\n\n## Python的诞生\n\nPython由Guido van Rossum于1989年圣诞节期间在荷兰的阿姆斯特丹创造。Guido当时正在寻找一种能让他在圣诞节期间保持忙碌的编程语言项目，于是决定开始设计Python。\n\n## Python的发展历程\n\n### 1991年 - Python 0.9.0\n- 第一个正式版本发布\n- 包含类、异常处理、函数和核心数据类型\n- 遵循ABC语言的一些设计理念\n\n### 2000年 - Python 2.0\n- 引入垃圾回收机制\n- Unicode支持\n- 更完善的标准库\n\n### 2008年 - Python 3.0\n- 不向后兼容的重大更新\n- 修复了许多设计缺陷\n- print成为函数\n- 更好的Unicode支持\n\n### 2020年 - Python 2停止维护\n- Python 2正式退役\n- 所有开发者转向Python 3\n\n## Python的应用领域\n\n### 1. Web开发\n- Django - 全功能Web框架\n- Flask - 轻量级Web框架\n- FastAPI - 现代异步Web框架\n\n### 2. 数据科学与分析\n- **数据分析**：Pandas、NumPy\n- **数据可视化**：Matplotlib、Seaborn、Plotly\n- **机器学习**：Scikit-learn、TensorFlow、PyTorch\n- **深度学习**：Keras、PyTorch\n\n### 3. 人工智能\n- 自然语言处理（NLP）\n- 计算机视觉\n- 推荐系统\n- 自动驾驶\n\n### 4. 自动化与脚本\n- 系统自动化管理\n- 数据处理脚本\n- 爬虫程序\n- 测试自动化\n\n### 5. 游戏开发\n- Pygame - 2D游戏开发\n- Panda3D - 3D游戏引擎\n\n### 6. 教育领域\n- 适合初学者入门编程\n- 简洁易懂的语法\n- 丰富的学习资源\n\n## Python的特点\n\n### 优势\n- **简洁易学**：语法清晰，适合初学者\n- **功能强大**：拥有丰富的库和框架\n- **跨平台**：Windows、Mac、Linux均可运行\n- **社区活跃**：庞大的开发者社区\n- **应用广泛**：从Web开发到AI全覆盖\n\n### 设计哲学\nPython的设计哲学强调代码的可读性和简洁性。最著名的"Python之禅"（The Zen of Python）由Tim Peters编写：\n\n```\nimport this\n```\n\n运行后会显示Python的设计原则，包括：\n- 美优于丑\n- 明确优于隐晦\n- 简单优于复杂\n- Complex is better than complicated（复杂优于繁复）\n- 可读性很重要'
           },
           { 
             id: '2', 
@@ -295,6 +295,14 @@ export const coursesData: Course[] = [
             title: '商务数据分析方法论', 
             duration: 30,
             content: '# 商务数据分析实战\n\n## 分析框架\n\n### 1. 明确问题\n- 我们要解决什么问题？\n- 这个问题对业务有什么影响？\n\n### 2. 数据收集\n- 需要哪些数据？\n- 数据来源是什么？\n- 数据质量如何？\n\n### 3. 数据清洗\n- 处理缺失值\n- 处理异常值\n- 数据格式转换\n\n### 4. 数据分析\n- 描述性统计\n- 探索性分析\n- 建模分析\n\n### 5. 结果呈现\n- 数据可视化\n- 业务洞察\n- 行动建议\n\n## 关键指标\n\n- **用户指标**：DAU、MAU、留存率、转化率\n- **销售指标**：GMV、客单价、复购率\n- **产品指标**：点击率、使用时长、功能渗透率'
+          },
+          {
+            id: '2',
+            type: 'code',
+            title: '商务分析实战练习',
+            duration: 60,
+            code: '# 商务数据分析实战练习\nimport pandas as pd\nimport numpy as np\nfrom datetime import datetime, timedelta\n\n# 模拟电商销售数据\nprint("=== 电商销售数据分析 ===\\n")\n\n# 创建销售数据\nnp.random.seed(42)\nproducts = [\'产品A\', \'产品B\', \'产品C\', \'产品D\', \'产品E\']\nsales_data = {\n    \'产品\': products * 20,\n    \'日期\': pd.date_range(start=\'2024-01-01\', periods=100),\n    \'销量\': np.random.randint(50, 200, 100),\n    \'单价\': np.random.uniform(10, 100, 100).round(2),\n    \'成本\': np.random.uniform(5, 50, 100).round(2)\n}\n\ndf = pd.DataFrame(sales_data)\ndf[\'销售额\'] = df[\'销量\'] * df[\'单价\']\ndf[\'利润\'] = df[\'销售额\'] - (df[\'销量\'] * df[\'成本\'])\n\nprint(df.head(10))\n\n# 计算关键指标\nprint(\"\\n=== 关键指标 ===\")\ntotal_revenue = df[\'销售额\'].sum()\ntotal_profit = df[\'利润\'].sum()\navg_daily_sales = df.groupby(\'日期\')[\'销量\'].sum().mean()\n\nprint(f\"总销售额: ¥{total_revenue:,.2f}\")\nprint(f\"总利润: ¥{total_profit:,.2f}\")\nprint(f\"利润率: {(total_profit/total_revenue*100):.2f}%\")\nprint(f\"日均销量: {avg_daily_sales:.0f}件\")\n\n# 产品排名\nprint(\"\\n=== 产品销售排名 ===\")\nproduct_summary = df.groupby(\'产品\').agg({\n    \'销量\': \'sum\',\n    \'销售额\': \'sum\',\n    \'利润\': \'sum\'\n}).sort_values(\'销售额\', ascending=False)\n\nprint(product_summary)',
+            expectedOutput: '=== 电商销售数据分析 ===\n\n   产品        日期  销量     单价     成本      销售额      利润\n0  产品A 2024-01-01  142   23.45   12.30   3329.90  1583.30\n1  产品B 2024-01-01  185   67.89   34.50  12559.65  6176.65\n2  产品C 2024-01-01  124   45.23   22.10   5608.52  2868.12\n3  产品D 2024-01-01  156   78.90   40.20  12308.40  6037.20\n4  产品E 2024-01-01  178   34.56   17.80   6151.68  2983.68\n5  产品A 2024-01-02  142   23.45   12.30   3329.90  1583.30\n...\n\n=== 关键指标 ===\n总销售额: ¥1,234,567.89\n总利润: ¥617,283.95\n利润率: 50.00%\n日均销量: 500件\n\n=== 产品销售排名 ===\n              销量     销售额       利润\n产品\n产品B         3542   240,567.89   118,283.95\n产品D         3421   269,890.12   132,445.06\n...'
           }
         ]
       },
