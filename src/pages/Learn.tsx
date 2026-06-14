@@ -5,6 +5,7 @@ import { getCourseById } from '../lib/courseData'
 import { markContentComplete, isContentComplete, getCourseProgress } from '../lib/storage'
 import { textToHtml } from '../lib/markdown'
 import Editor from '@monaco-editor/react'
+import { runPython } from '../lib/pythonEvaluator'
 
 const Learn: React.FC = () => {
   const { courseId, chapterId } = useParams<{ courseId: string; chapterId: string }>()
@@ -52,128 +53,22 @@ const Learn: React.FC = () => {
     
     try {
       if (activeEditorType === 'python') {
-        // Python代码模拟执行
-        const code = userCode
-        const lines = code.split('\n')
-        const capturedOutput: string[] = []
-        const variables: Record<string, any> = {}
-        
-        // 先提取所有变量赋值（包括不同类型）
-        for (const line of lines) {
-          const trimmed = line.trim()
-          // 跳过注释和空行
-          if (!trimmed || trimmed.startsWith('#')) continue
-          
-          // 匹配变量赋值
-          const assignMatch = trimmed.match(/^(\w+)\s*=\s*(.+)$/)
-          if (assignMatch && !trimmed.startsWith('print')) {
-            const varName = assignMatch[1]
-            let varValue = assignMatch[2].trim()
-            
-            // 去掉字符串引号
-            if ((varValue.startsWith('"') && varValue.endsWith('"')) ||
-                (varValue.startsWith("'") && varValue.endsWith("'"))) {
-              varValue = varValue.slice(1, -1)
-            } else {
-              // 尝试转换为数字
-              const numValue = parseFloat(varValue)
-              if (!isNaN(numValue)) {
-                varValue = numValue
-              }
-            }
-            variables[varName] = varValue
-          }
-        }
-        
-        // 执行print语句
-        for (const line of lines) {
-          const trimmed = line.trim()
-          // 跳过注释和空行
-          if (!trimmed || trimmed.startsWith('#')) continue
-          
-          if (trimmed.startsWith('print(')) {
-            const contentMatch = trimmed.match(/print\(([\s\S]*)\)\s*$/)
-            if (contentMatch) {
-              const argsStr = contentMatch[1]
-              // 解析多个参数（逗号分隔）
-              const args: string[] = []
-              let currentArg = ''
-              let inString = false
-              let stringChar = ''
-              
-              for (let i = 0; i < argsStr.length; i++) {
-                const char = argsStr[i]
-                
-                if ((char === '"' || char === "'") && !inString) {
-                  inString = true
-                  stringChar = char
-                  currentArg += char
-                } else if (char === stringChar && inString) {
-                  inString = false
-                  currentArg += char
-                } else if (char === ',' && !inString) {
-                  args.push(currentArg.trim())
-                  currentArg = ''
-                } else {
-                  currentArg += char
-                }
-              }
-              if (currentArg.trim()) args.push(currentArg.trim())
-              
-              // 处理每个参数
-              const processedArgs: string[] = []
-              for (const arg of args) {
-                let processed = arg.trim()
-                
-                // 如果是字符串字面量
-                if ((processed.startsWith('"') && processed.endsWith('"')) ||
-                    (processed.startsWith("'") && processed.endsWith("'"))) {
-                  processed = processed.slice(1, -1)
-                } 
-                // 如果是变量
-                else if (processed in variables) {
-                  const varVal = variables[processed]
-                  processed = typeof varVal === 'string' ? varVal : String(varVal)
-                }
-                // 简单的表达式计算
-                else {
-                  const simpleExpr = processed.replace(/\s/g, '')
-                  // 支持变量参与的计算
-                  let expr = simpleExpr
-                  for (const [varName, varVal] of Object.entries(variables)) {
-                    const valStr = typeof varVal === 'string' ? `"${varVal}"` : String(varVal)
-                    expr = expr.replace(new RegExp(varName, 'g'), valStr)
-                  }
-                  
-                  if (/^[\d+\-*/().]+$/.test(expr)) {
-                    try {
-                      // eslint-disable-next-line no-eval
-                      const result = eval(expr)
-                      processed = String(result)
-                    } catch {
-                      // 如果计算失败，尝试原表达式
-                    }
-                  }
-                }
-                
-                processedArgs.push(processed)
-              }
-              
-              capturedOutput.push(processedArgs.join(' '))
-            }
-          }
-        }
-        
-        // 根据结果设置输出
-        if (capturedOutput.length > 0) {
-          output = capturedOutput.join('\n')
-        } else if (userCode.trim() === '') {
+        // 使用完整的Python解释器执行代码
+        if (userCode.trim() === '') {
           output = '请输入Python代码\n例如：\nprint("Hello, World!")\nx = 10\nprint(x)'
-        } else if (activeContent.expectedOutput) {
-          // 如果解析失败但有预期输出，显示预期输出并加上提示
-          output = `📝 参考答案：\n${activeContent.expectedOutput}\n\n💡 你的代码已保存，可以修改后再试`
         } else {
-          output = `✅ Python代码已运行！\n(注：这是演示环境，仅支持基础语法)\n\n已执行 ${lines.length} 行代码`
+          try {
+            const result = runPython(userCode)
+            if (result) {
+              output = result
+            } else if (activeContent.expectedOutput) {
+              output = `📝 参考答案：\n${activeContent.expectedOutput}\n\n💡 你的代码已保存，可以修改后再试`
+            } else {
+              output = `✅ Python代码已运行！\n(注：这是演示环境，仅支持基础语法)\n\n代码执行完成但无输出`
+            }
+          } catch (e) {
+            output = `⚠️ 执行出错: ${(e as Error).message}`
+          }
         }
       } else if (activeEditorType === 'sql') {
         // 改进的SQL模拟执行
